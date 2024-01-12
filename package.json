@@ -1,0 +1,9 @@
+{
+  "name": "tank-attack",
+  "version": "0.0.1",
+  "description": "Clasic tank attack game.",
+  "main": "index.js",
+  "author": "Rodrigo Cabrera",
+  "license": "MIT",
+  "private": false
+}
