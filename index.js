@@ -1,100 +1,66 @@
-const dropdown = document.getElementById("animations");
-dropdown.addEventListener("change", (e) => {
-  console.log("test");
-  playerState = e.target.value;
-});
-const canvas = document.getElementById("canvas");
+const canvas = document.getElementById("canvas1");
 const ctx = canvas.getContext("2d");
-const CANVAS_WIDTH = (canvas.width = 600);
-const CANVAS_HEIGHT = (canvas.height = 600);
+const CANVAS_WIDTH = (canvas.width = 800);
+const CANVAS_HEIGHT = (canvas.height = 700);
 
-const playerImage = new Image();
-playerImage.src = "shadow_dog.png";
-const spriteWidth = 575;
-const spriteHeight = 523;
-let playerState = "run";
-let gameFrame = 0;
-let staggerFramer = 5;
-const spriteAnimations = [];
-const animationSattes = [
-  {
-    name: "idle",
-    frames: 7,
-  },
-  {
-    name: "jump",
-    frames: 7,
-  },
-  {
-    name: "fall",
-    frames: 8,
-  },
-  {
-    name: "run",
-    frames: 9,
-  },
-  {
-    name: "dizzy",
-    frames: 11,
-  },
-  {
-    name: "sit",
-    frames: 5,
-  },
-  {
-    name: "roll",
-    frames: 7,
-  },
-  {
-    name: "bite",
-    frames: 7,
-  },
-  {
-    name: "ko",
-    frames: 7,
-  },
-  {
-    name: "getHit",
-    frames: 4,
-  },
-];
-animationSattes.forEach((state, index) => {
-  let frames = {
-    loc: [],
-  };
-  for (let j = 0; j < state.frames; j++) {
-    let positionX = j * spriteWidth;
-    let positionY = index * spriteHeight;
-    frames.loc.push({ x: positionX, y: positionY });
+let gameSpeed = 2;
+
+const backgroundLayer1 = new Image();
+backgroundLayer1.src = "layer-1.png";
+const backgroundLayer2 = new Image();
+backgroundLayer2.src = "layer-2.png";
+const backgroundLayer3 = new Image();
+backgroundLayer3.src = "layer-3.png";
+const backgroundLayer4 = new Image();
+backgroundLayer4.src = "layer-4.png";
+const backgroundLayer5 = new Image();
+backgroundLayer5.src = "layer-5.png";
+
+class Layer {
+  constructor(image, speedModifier) {
+    this.x = 0;
+    this.y = 0;
+    this.width = 2400;
+    this.height = 700;
+    this.image = image;
+    this.speedModifier = speedModifier;
+    this.speed = gameSpeed * this.speedModifier;
   }
-  spriteAnimations[state.name] = frames;
-});
+  update() {
+    this.speed = gameSpeed * this.speedModifier;
+    if (this.x <= -this.width) {
+      this.x = 0;
+    }
+
+    this.x = Math.floor(this.x - this.speed);
+  }
+
+  draw() {
+    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    ctx.drawImage(
+      this.image,
+      this.x + this.width,
+      this.y,
+      this.width,
+      this.height
+    );
+  }
+}
+
+const layer1 = new Layer(backgroundLayer1, 0.5);
+const layer2 = new Layer(backgroundLayer2, 1);
+const layer3 = new Layer(backgroundLayer3, 1.5);
+const layer4 = new Layer(backgroundLayer4, 2);
+const layer5 = new Layer(backgroundLayer5, 2.5);
+
+const gameObjects = [layer1, layer2, layer3, layer4, layer5];
+
 function animate() {
   ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  //ctx.fillRect(gameFrame, 50, 200, 100);
-  let position =
-    Math.floor(gameFrame / staggerFramer) %
-    spriteAnimations[playerState].loc.length;
-  let frameX = spriteWidth * position;
-  let frameY = spriteAnimations[playerState].loc[position].y;
-  ctx.drawImage(
-    playerImage,
-    frameX,
-    frameY,
-    spriteWidth,
-    spriteHeight,
-    0,
-    0,
-    spriteWidth,
-    spriteHeight
-  );
-  if (gameFrame % staggerFramer === 0) {
-    if (frameX < 6) frameX++;
-    else frameX = 0;
-  }
-
-  gameFrame++;
-
+  gameObjects.forEach((gameLayer) => {
+    gameLayer.update();
+    gameLayer.draw();
+  });
   requestAnimationFrame(animate);
 }
 animate();
